@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" 
+scroll-behavior="smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+    :root {
+                --primary-color: hsl(210, 29%, 24%); 
+            --accent-color: hsl(204, 70%, 53%);  
+            --bg-color: hsl(0, 0%, 96%);      
+            --text-color: hsl(0, 0%, 20%);
+    }
+    section {
+  margin: 100px 0;  
+} 
+
+    body {
+      line-height: 1.6;
+      color: hsl(0, 0%, 20%);
+      background: hsl(0, 0%, 98%);
+    }
+
+    header {
+      background: hsl(0, 0%, 13%);
+      color: hsl(0, 0%, 100%);
+       padding:1rem 2rem;
+      text-align: center;
+    }
+
+ .navbar{
+  width: 80%;
+  margin: 20px auto;
+  background: hsl(0, 4%, 19%);
+  border-radius: 20px;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#2b2b2b, #2b2b2b) padding-box,
+    linear-gradient(90deg, #2ecc71, #3498db) border-box;
+    /* i learned this from google as I saw it previously somewhere and tried to implement it here */
+
+}
+
+.navbar a {
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 500;
+    color: hsl(0, 0%, 100%);
+}
+
+ 
+    .nav-links{
+        list-style: none;
+        display:flex;
+        justify-content: center;
+           gap:40px;
+
+    }
+    .nav-links a{
+        text-decoration:none;
+        color:hsl(0, 16%, 93%);
+        font-size:25px;
+        transition:color 0.3s ease;
+        margin-top:30px;
+        padding:1px solid transparent;
+        border-radius:2px;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.1);
+
+    }
+    .nav-links a:hover{
+        color:hsl(189, 82%, 60%);
+       
+
+    }
+ h2 {margin-bottom:20px;
+      text-align: center;
+      color: #222;
+    }
+    .about{
+        display:flex;
+        gap: 20px;
+        align-items:center;
+        justify-content:center;
+        background:hsl(0, 5%, 58%)
+
+
+
+    }
+    .about-text{
+        flex:1;
+        min-width:300px;
+        
+        }
+    .home-content{
+            display:flex;
+            align-items:left;
+            gap:30px;
+            max-width: 1100px;
+            margin:auto;
+           
+            
+    }
+    .me-img{
+        width: 180px;
+        height:180;
+        border-radius: 50%;
+        box-shadow: 0 8px 20px black;
+        object-fit: cover;
+    }
+    .Home-text{
+        margin-bottom: 15px;
+      padding: 15px;
+      background: hsl(0, 0%, 100%);
+      border-left: 10px solid hsl(132, 54%, 54%);
+      border-bottom: 10px solid hsl(132, 54%, 54%);
+      border-radius: 10px;
+      
+    }
+    .project-link{
+        display:inline-block;
+        margin-top:20px;
+        padding:10px 15px;
+        background-color:hsl(204, 70%, 53%);
+        color:white;
+        text-decoration:none;
+        border-radius:50px;
+        font-size:20px;
+        font-weight:500;
+        transition: 0.5s ease;
+       border-radius: 30px;
+    
+
+    }
+    .project-link:hover{
+        background-color:hsl(211, 52%, 19%);
+        box-shadow:3px 3px 5px hsla(0, 0%, 0%, 0.3);
+    }
+    .project-btn-wrapper{
+        text-align:center;
+        justify-content: center;
+    }
+    .note-title{
+        font-weight:600;
+        font-size:18px;
+        color:hsl(0, 0%, 20%);
+    
+    }
+    .projects-section{
+         margin-bottom: 15px;
+      background: hsl(0, 0%, 100%);
+      border: 5px solid transparent;
+  background:
+    linear-gradient(#e8dfdf, #8c8686) padding-box,
+    linear-gradient(90deg, hsl(33, 85%, 61%), #3498db) border-box;
+      padding: 30px;
+      border-radius: 100px;
+      box-shadow: 0 2px 6px hsla(0, 0%, 0%, 0.1);
+      font-size: 18px;
+    }
+.about-text {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px black;
+    }
+
+    .about-text h3 {
+      color: hsl(36, 100%, 50%);
+      margin-top: 20px;
+    }
+
+    .about-text p {
+      margin: 8px 0;
+    }
+ .contact p {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+         background: black;
+      color: white;
+      padding: 15px;
+      margin-top: 30px;
+    }
+    
+    
+</style>
+</head>
+<body>
+    <header class="header">
+    <div class="container">
+    <h1>
+        Welcome to My Portfolio website
+    </h1>
+    <nav class="navbar">
+        <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#about">About me</a></li> 
+        <li><a href="#contact">Contact</a></li>
+        </ul>
+        
+    </nav>
+</div>
+    </header>
+    
+    <section id="home">
+    <h2>Home</h2>
+    <div class="home-content">
+        <div class="home-content">
+        <img src="me.jpg" alt="Abheer sharma" class="me-img">
+    
+      <div class="Home-text">
+        <p>Hello! I am <b>Abheer Sharma</b>, a first-year Computer Science student with a deep interest in coding and entrepreneurship. I strongly believe that exploring these fields will not only enhance my technical knowledge but also improve my way of thinking, problem-solving abilities, and overall personality. With a passion for continuous learning and innovation, I aim to build a strong foundation that will contribute to my career growth and help me create impactful solutions in the future. 
+        This i s my beginner portfolio showcasing my information.</p>
+        <p><b>Registration Number:</b> RA2511003011824</p>
+      </div>
+        </div>
+    </div>
+  </section>
+  <section id="projects">
+    <div class="projects-section">
+    <h2>Projects</h2>
+    <UL>
+        <li>Bionew Website is a beginner-level group project built using HTML, CSS and JavaScript logic, focusing on clean UI design, structured layout, and simple navigation.
+        <br> It was developed by my group as part of an academic assignment.</li>
+    </UL>
+    <p class="note-title" >NOTE: This is actually a group project made by me and my friend as a part of our academic assignment.  
+  So, the credit goes not only to me but to my friend as well.</p>
+<div class="project-btn-wrapper">
+  <a href="bionew.html" class="project-link" target="_blank">View Project</a>
+</div>
+    </div>
+  </section>   
+ 
+<section id="about">
+    <h2>About me</h2>
+    <div class="about-text">
+      <h3>Career Objective</h3>
+      <p>I have a PCMB background in my higher secondary education and did not have prior exposure to computer science and coding. I am now actively learning coding and technology to build a strong foundation in this field.
+        My objective is to gain practical experience and knowledge in computer science, enabling me to contribute effectively to the tech industry in the future.   
+     </p>
+
+      <h3>Education</h3>
+      <p><b>SRM Institute of Science and Technology (SRMIST)</b> B.Tech in Computer Science (2025 – Present)</p>
+      <p><b>ARMY PUBLIC School Nagrota</b> Class I-XII</p>
+
+      <h3>Skills</h3>
+      
+      <p><b>Soft Skills:</b> Teamwork, Organization, Communication, Problem Solving</p>
+      <p><b>professional skills:<ul>
+        <li>C</li>
+        <li>html-css(basic)</li>
+        <li>JavaScript(learning)</li>
+        <li>Python (Academic-level knowledge; actively working to deepen practical proficiency)</li>
+        </li>
+      </ul>
+
+      <h3>Hobbies</h3>
+      <p>Calisthenics, Football , Entrepreneurship, aaerospace, rubik's cubes etc.</p>
+
+      <h3>Personal Details</h3>
+       <p><b>Name:</b> Abheer Sharma</p>
+        <p><b>Email:</b>as9742@srmist.edu.in</p>
+      <p><b>Phone:</b> +91 9541892923</p>
+      <p><b>Registration Number:</b> RA2511003011824</p>
+      <p><b>Languages Known:</b> English, Hindi</p>
+        <p><b>Hobbies:</b> Fitness, Calisthenics, Football, rubik's cubes, learning new things</p>
+    </div>
+  </section>
+  <section id="contact">
+    <h2>Contact</h2>
+    <div class="contact">
+      <p>Email: <a href="mailto:as9742@srmist.edu.in">as9742@srmist.edu.in</a></p>
+      <p>Phone: 9541892923</p>
+      <p>Registration No: RA2511003011824</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>   ©2025 Abheer Sharma | Portfolio Website</p>
+  </footer>
+</body>
+</html>

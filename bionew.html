@@ -1,0 +1,2456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Human Genome Project Portfolio</title>
+    
+       <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --card-dark: #0a0a0a;
+            --card-hover-dark: #111111;
+            --border-dark: #1a1a1a;
+            --border-hover-dark: #2a2a2a;
+            --text-primary-dark: #ffffff;
+            --text-secondary-dark: #a0a0a0;
+            --text-tertiary-dark: #707070;
+            --accent-dark: #00d4ff;
+            --accent-hover-dark: #00b8e6;
+            
+            --bg-light: #ffffff;
+            --card-light: #f8f9fa;
+            --card-hover-light: #f0f2f5;
+            --border-light: #e1e4e8;
+              --border-hover-light: #c8ccd1;
+            --text-primary-light: #1a1a1a;
+            --text-secondary-light: #586069;
+            --text-tertiary-light: #959ba3;
+            --accent-light: #0366d6;
+            --accent-hover-light: #0256c7;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary-dark);
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.light-mode {
+            background: var(--bg-light);
+            color: var(--text-primary-light);
+        }
+
+        body.light-mode {
+            --bg: var(--bg-light);
+                --card-bg: var(--card-light);
+            --card-hover: var(--card-hover-light);
+            --border: var(--border-light);
+            --border-hover: var(--border-hover-light);
+            --text-primary: var(--text-primary-light);
+            --text-secondary: var(--text-secondary-light);
+            --text-tertiary: var(--text-tertiary-light);
+            --accent: var(--accent-light);
+            --accent-hover: var(--accent-hover-light);
+        }
+
+        body:not(.light-mode) {
+            --bg: var(--bg-dark);
+            --card-bg: var(--card-dark);
+            --card-hover: var(--card-hover-dark);
+            --border: var(--border-dark);
+            --border-hover: var(--border-hover-dark);
+            --text-primary: var(--text-primary-dark);
+            --text-secondary: var(--text-secondary-dark);
+            --text-tertiary: var(--text-tertiary-dark);
+            --accent: var(--accent-dark);
+            --accent-hover: var(--accent-hover-dark);
+        }
+
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        #preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+              right: 0;
+            height: 70px;
+             background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+              align-items: center;
+            justify-content: space-between;
+             padding: 0 2rem;
+            z-index: 1000;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .nav-logo {
+            font-size: 1.3rem;
+              font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nav-controls {
+              display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .slide-counter {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+   
+        .theme-toggle {
+             background: var(--border);
+            border: none;
+            padding: 0.6rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+             transition: background 0.3s;
+            color: var(--text-primary);
+        }
+        .theme-toggle:hover {
+            background: var(--accent);
+        }
+
+        .slide-nav {
+            position: fixed;
+             right: 2rem;
+             top: 50%;
+            transform: translateY(-50%);
+            z-index: 999;
+            display: flex;
+             flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .slide-nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border);
+            cursor: pointer;
+            transition: all 0.6s;
+            position: relative;
+        }
+
+        .slide-nav-dot:hover {
+            background: var(--text-secondary);
+             transform: scale(1.2);
+        }
+
+        .slide-nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.3);
+        }
+
+        .slide-nav-dot::after {
+            content: attr(data-title);
+            position: absolute;
+            right: 25px;
+             top: 50%;
+            transform: translateY(-50%);
+             background: var(--card-bg);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+             font-size: 0.85rem;
+            white-space: nowrap;
+             opacity: 0;
+            pointer-events: none;
+ transition: opacity 0.3s;
+            border: 1px solid var(--border);
+ color: var(--text-primary);
+        }
+
+        .slide-nav-dot:hover::after {
+            opacity: 1;
+        }
+
+        .slides-container {
+            position: relative;
+              width: 100%;
+            height: 100vh;
+             padding-top: 70px;
+        }
+
+        .slide {
+            position: absolute;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            height: calc(100vh - 70px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+            overflow-y: auto;
+            padding: 3rem 4rem;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .arrow-nav {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 999;
+        }
+
+        .arrow-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-primary);
+        }
+
+        .arrow-btn:hover:not(:disabled) {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .arrow-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .arrow-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+        }
+
+        .slide-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .slide-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            max-width: 900px;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            background: var(--card-hover);
+            transform: translateY(-2px);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .students-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .student-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .student-card:hover {
+            border-color: var(--border-hover);
+            background: var(--card-hover);
+            transform: translateY(-2px);
+        }
+
+        .student-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .student-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .remove-student {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--border);
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .student-card:hover .remove-student {
+            opacity: 1;
+        }
+
+        .remove-student:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .add-student-btn {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .add-student-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .stat-item {
+            margin-bottom: 2rem;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .stat-bar {
+            height: 40px;
+            background: var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: width 1s ease-out;
+        }
+
+        .image-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 2rem 0;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--accent);
+            background: var(--card-bg);
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .image-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            cursor: pointer;
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .image-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .image-caption {
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.8);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 2;
+        }
+
+        .image-item:hover .remove-image {
+            opacity: 1;
+        }
+
+        .remove-image:hover {
+            background: #ef4444;
+        }
+
+        .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .image-modal img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        [contenteditable="true"] {
+            outline: 2px solid transparent;
+            transition: outline 0.3s;
+            padding: 0.25rem;
+            border-radius: 4px;
+        }
+
+        [contenteditable="true"]:focus {
+            outline: 2px solid var(--accent);
+            background: var(--card-bg);
+        }
+
+        [contenteditable="true"]:hover {
+            background: var(--card-hover);
+        }
+
+        .content-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .content-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-btn-small {
+            background: var(--border);
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .upload-btn-small:hover {
+            background: var(--accent);
+        }
+
+        .section-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .section-image-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .section-image-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .section-image-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .blast-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .blast-form {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .blast-results {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            background: var(--card-bg);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--card-bg);
+        }
+
+        td {
+            color: var(--text-secondary);
+        }
+
+        .model-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .model-viewer {
+            width: 100%;
+            height: 500px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--card-bg);
+        }
+
+        .model-viewer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 2rem 0;
+        }
+
+        .flowchart {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .flowchart svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .info-box {
+            background: var(--card-bg);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+        }
+
+        .info-box h4 {
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .info-box p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-stat {
+            display: inline-block;
+            background: var(--accent);
+            color: var(--bg);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 700;
+            margin: 0 0.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .blast-container,
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .slide {
+                padding: 2rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div id="preloader">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="image-modal" id="imageModal">
+        <button class="close-modal" onclick="closeImageModal()">
+            <i data-feather="x"></i>
+        </button>
+        <img id="modalImage" src="" alt="Enlarged view">
+    </div>
+
+    <nav class="top-nav">
+        <div class="nav-logo">Human Genome Project</div>
+        <div class="nav-controls">
+            <div class="slide-counter">
+                <span id="current-slide">1</span> / <span id="total-slides">12</span>
+            </div>
+            <button class="theme-toggle" id="theme-toggle">
+                <i data-feather="sun"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="slide-nav" id="slide-nav"></div>
+
+    <div class="arrow-nav">
+        <button class="arrow-btn" id="prev-btn">
+            <i data-feather="chevron-left"></i>
+        </button>
+        <button class="arrow-btn" id="next-btn">
+            <i data-feather="chevron-right"></i>
+        </button>
+    </div>
+
+    <div class="slides-container">
+        <!-- Slide 1: Hero -->
+        <div class="slide active" data-slide="1">
+            <div class="hero-content">
+                <h1 class="hero-title" contenteditable="true">The Human Genome Project</h1>
+                <p class="hero-subtitle" contenteditable="true">Decoding the Blueprint of Life</p>
+                <p class="hero-description" contenteditable="true">
+                    An interactive exploration of one of the most ambitious and transformative scientific endeavors 
+                    in human history. The Human Genome Project was a 13-year international research effort that successfully 
+                    sequenced and mapped all 3 billion base pairs in human DNA, revolutionizing our understanding of genetics, 
+                    medicine, and what it means to be human. This portfolio examines the project's groundbreaking methodology, 
+                    remarkable discoveries, technological innovations, and its profound impact on modern medicine and biology.
+                </p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Project Info -->
+        <div class="slide" data-slide="2">
+            <h2 class="slide-title">Project Information</h2>
+            <p class="slide-subtitle">Team & Overview</p>
+            
+            <div class="card">
+                <h3 class="section-title">Team Members</h3>
+                <div class="students-container" id="studentsContainer">
+                   
+                      
+                   
+                   
+                      
+                   
+                </div>
+                <button class="add-student-btn" onclick="addStudent()">
+                    <i data-feather="plus"></i>
+                    Add Team Member
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">Project Description</h3>
+                <p contenteditable="true" style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 1rem;">
+                    This interactive portfolio serves as a comprehensive educational resource for understanding the Human Genome Project (HGP) 
+                    and its profound impact on modern science. The HGP was launched in 1990 as an international scientific research project 
+                    with the ambitious goal of determining the complete sequence of nucleotide base pairs that make up human DNA and identifying 
+                    all genes of the human genome.
+                </p>
+                <p contenteditable="true" style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 1rem;">
+                    Through interactive visualizations, hands-on analysis tools, and detailed documentation, we explore the journey from the 
+                    project's inception to its transformative outcomes. The project involved over 20 countries and thousands of researchers 
+                    working collaboratively to achieve what seemed impossible - mapping the entire human genetic code.
+                </p>
+                <p contenteditable="true" style="line-height: 1.8; color: var(--text-secondary);">
+                    Declared complete in April 2003, the HGP has revolutionized biological and medical research, enabling breakthroughs in 
+                    personalized medicine, disease diagnosis, drug development, and our fundamental understanding of human biology and evolution.
+                </p>
+            </div>
+
+            <div class="info-box">
+                <h4>Why Was the HGP Important?</h4>
+                <p>The Human Genome Project provided the foundation for:</p>
+                <p>• Understanding genetic diseases and developing targeted treatments</p>
+                <p>• Advancing personalized medicine based on individual genetic profiles</p>
+                <p>• Discovering evolutionary relationships between species</p>
+                <p>• Creating new biotechnology industries and research fields</p>
+                <p>• Establishing ethical frameworks for genetic research</p>
+            </div>
+        </div>
+
+        <!-- Slide 3: Key Statistics -->
+        <div class="slide" data-slide="3">
+            <h2 class="slide-title" contenteditable="true">Human Genome Project</h2>
+            <p class="slide-subtitle" contenteditable="true">Key Statistics & Achievements</p>
+            
+            <div class="content-section">
+                <div class="content-section-header">
+                    <h3 class="section-title">Project Statistics</h3>
+                    <button class="upload-btn-small" onclick="document.getElementById('stats-upload').click()">
+                        <i data-feather="image"></i>
+                        Add Image
+                    </button>
+                    <input type="file" id="stats-upload" accept="image/*" multiple style="display: none;">
+                </div>
+                <div class="section-images" id="stats-images"></div>
+                
+                <div contenteditable="true" style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 2rem;">
+                    <p style="margin-bottom: 1rem;">The Human Genome Project represents one of the greatest scientific achievements in history. The project successfully sequenced approximately <span class="highlight-stat">3 billion</span> base pairs - the chemical building blocks that make up DNA - with an accuracy of <span class="highlight-stat">99.99%</span>. This monumental task required unprecedented international collaboration and technological innovation.</p>
+                    <p style="margin-bottom: 1rem;">Launched in October 1990 and completed in April 2003, the project identified approximately <span class="highlight-stat">20,000-25,000</span> genes in human DNA. Initially estimated to cost $3 billion and take 15 years, the project was completed ahead of schedule thanks to rapid technological advances in DNA sequencing.</p>
+                    <p>The project involved researchers from over 20 countries working at major sequencing centers including the Wellcome Trust Sanger Institute (UK), the U.S. Department of Energy's Joint Genome Institute, Baylor College of Medicine, and Washington University in St. Louis, among others.</p>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span contenteditable="true">Base Pairs Sequenced</span>
+                        <span contenteditable="true">3 Billion</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" data-width="100%">3,000,000,000 bp</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span contenteditable="true">Estimated Genes Identified</span>
+                        <span contenteditable="true">~20,000-25,000</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" data-width="85%">20,000 - 25,000 genes</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span contenteditable="true">Project Duration</span>
+                        <span contenteditable="true">13 Years</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" data-width="87%">1990 - 2003</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span contenteditable="true">Total Project Cost</span>
+                        <span contenteditable="true">$2.7 Billion</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" data-width="90%">$2,700,000,000 USD</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span contenteditable="true">Sequencing Accuracy Achieved</span>
+                        <span contenteditable="true">99.99%</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" data-width="99.99%">99.99% Accurate</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-label">
+                        <span contenteditable="true">Countries Involved</span>
+                        <span contenteditable="true">20+ Nations</span>
+                    </div>
+                    <div class="stat-bar">
+                        <div class="stat-fill" data-width="75%">International Collaboration</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>Economic Impact</h4>
+                <p>For every $1 invested in the Human Genome Project, approximately $141 was returned to the U.S. economy through new industries, job creation, and medical innovations. The project generated an estimated $796 billion in economic impact between 1988 and 2010.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Development Flowchart -->
+        <div class="slide" data-slide="4">
+            <h2 class="slide-title" contenteditable="true">Project Development</h2>
+            <p class="slide-subtitle" contenteditable="true">Sequencing Workflow & Methodology</p>
+            
+            <div class="content-section">
+                <div class="content-section-header">
+                    <h3 class="section-title">Development Process</h3>
+                    <button class="upload-btn-small" onclick="document.getElementById('workflow-upload').click()">
+                        <i data-feather="image"></i>
+                        Add Image
+                    </button>
+                    <input type="file" id="workflow-upload" accept="image/*" multiple style="display: none;">
+                </div>
+                <div class="section-images" id="workflow-images"></div>
+                
+                <div contenteditable="true" style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 2rem;">
+                    <p style="margin-bottom: 1rem;">The Human Genome Project employed a systematic and rigorous approach to sequencing the entire human genome. The process began with collecting DNA samples from multiple anonymous donors to create a composite reference genome that would represent humanity as a whole, rather than any single individual.</p>
+                    <p style="margin-bottom: 1rem;">DNA molecules are far too long to sequence all at once, so the first critical step was DNA fragmentation - breaking the genome into manageable pieces. These fragments were then cloned into bacterial vectors to create libraries that could be amplified and preserved. The fragments were sequenced using the Sanger sequencing method, also known as chain-termination sequencing, which was the gold standard during the HGP era.</p>
+                    <p style="margin-bottom: 1rem;">After sequencing millions of fragments, sophisticated computational algorithms were used for genome assembly - piecing together these fragments by identifying overlapping sequences, much like assembling a massive jigsaw puzzle with 3 billion pieces. The final step involved annotation, where genes were identified and their functions predicted using computational tools and comparative genomics.</p>
+                    <p>This workflow was repeated millions of times with redundant sequencing (coverage) to ensure accuracy. Each base pair was typically sequenced 10-12 times to minimize errors and achieve the project's stringent 99.99% accuracy target.</p>
+                </div>
+            </div>
+            
+            <div class="flowchart">
+                <svg viewBox="0 0 900 600" style="max-width: 900px; margin: 0 auto; display: block;">
+                    <defs>
+                        <linearGradient id="boxGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.1" />
+                        </linearGradient>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#00d4ff"/>
+                        </marker>
+                    </defs>
+                    
+                    <rect x="300" y="20" width="300" height="70" rx="10" fill="url(#boxGrad)" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="450" y="60" text-anchor="middle" fill="currentColor" font-size="18" font-weight="600">DNA Sample Collection</text>
+                    
+                    <line x1="450" y1="90" x2="450" y2="130" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <rect x="300" y="130" width="300" height="70" rx="10" fill="url(#boxGrad)" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="450" y="170" text-anchor="middle" fill="currentColor" font-size="18" font-weight="600">DNA Fragmentation</text>
+                    
+                    <line x1="450" y1="200" x2="450" y2="240" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <rect x="300" y="240" width="300" height="70" rx="10" fill="url(#boxGrad)" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="450" y="280" text-anchor="middle" fill="currentColor" font-size="18" font-weight="600">Sequencing (Sanger Method)</text>
+                    
+                    <line x1="450" y1="310" x2="450" y2="350" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <rect x="300" y="350" width="300" height="70" rx="10" fill="url(#boxGrad)" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="450" y="390" text-anchor="middle" fill="currentColor" font-size="18" font-weight="600">Genome Assembly</text>
+                    
+                    <line x1="450" y1="420" x2="450" y2="460" stroke="#00d4ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <rect x="300" y="460" width="300" height="70" rx="10" fill="url(#boxGrad)" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="450" y="500" text-anchor="middle" fill="currentColor" font-size="18" font-weight="600">Annotation & Analysis</text>
+                </svg>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <h4>Sanger Sequencing Method</h4>
+                <p>The Sanger method, developed by Frederick Sanger in 1977, was the primary sequencing technology used during the HGP. It involves DNA synthesis using chain-terminating dideoxynucleotides that stop DNA strand extension at specific points, creating fragments of different lengths. These fragments are then separated by size using gel electrophoresis, and the sequence is read from the resulting pattern. While highly accurate, this method is relatively slow and expensive compared to modern next-generation sequencing technologies.</p>
+            </div>
+        </div>
+
+        <!-- Slide 5: Sequencing Evolution -->
+        <div class="slide" data-slide="5">
+            <h2 class="slide-title" contenteditable="true">Sequencing Technology Evolution</h2>
+            <p class="slide-subtitle" contenteditable="true">From Sanger to Next-Generation</p>
+            
+            <div class="content-section">
+                <div class="content-section-header">
+                    <h3 class="section-title">Technology Timeline</h3>
+                    <button class="upload-btn-small" onclick="document.getElementById('sequencing-upload').click()">
+                        <i data-feather="image"></i>
+                        Add Image
+                    </button>
+                    <input type="file" id="sequencing-upload" accept="image/*" multiple style="display: none;">
+                </div>
+                <div class="section-images" id="sequencing-images"></div>
+                
+                <div contenteditable="true" style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 2rem;">
+                    <p style="margin-bottom: 1rem;">DNA sequencing technology has undergone a remarkable transformation since the inception of the Human Genome Project. The original HGP relied primarily on Sanger sequencing, a highly accurate but relatively slow and expensive method that could sequence approximately 1,000 base pairs at a time. During the project's duration, the cost of sequencing was about $0.50 per base pair.</p>
+                    <p style="margin-bottom: 1rem;">The completion of the HGP catalyzed rapid advances in sequencing technology. Next-Generation Sequencing (NGS) technologies, introduced in the mid-2000s, revolutionized the field by enabling massively parallel sequencing - sequencing millions of DNA fragments simultaneously. This breakthrough reduced the cost dramatically to approximately $0.01 per million bases and reduced the time required from years to days.</p>
+                    <p style="margin-bottom: 1rem;">The latest innovations in long-read sequencing technologies, such as Pacific Biosciences' SMRT sequencing and Oxford Nanopore's sequencing platforms, can read DNA sequences tens of thousands of base pairs long in a single pass. This enables researchers to sequence through complex genomic regions that were difficult or impossible to resolve with short-read methods.</p>
+                    <p>Today, sequencing a complete human genome costs less than $1,000 and can be completed in under 24 hours - a far cry from the original HGP's $2.7 billion cost and 13-year timeline. This dramatic cost reduction has made genomics accessible for routine clinical use, enabling personalized medicine and large-scale population genomics studies.</p>
+                </div>
+            </div>
+            
+            <div class="flowchart">
+                <svg viewBox="0 0 1000 300" style="max-width: 1000px; margin: 0 auto; display: block;">
+                    <defs>
+                        <linearGradient id="timelineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#00d4ff;stop-opacity:0.5" />
+                            <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <line x1="100" y1="150" x2="900" y2="150" stroke="url(#timelineGrad)" stroke-width="4"/>
+                    
+                    <circle cx="200" cy="150" r="12" fill="#00d4ff"/>
+                    <rect x="125" y="30" width="150" height="90" rx="10" fill="url(#boxGrad)" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="200" y="65" text-anchor="middle" fill="currentColor" font-size="16" font-weight="700">Sanger Sequencing</text>
+                    <text x="200" y="90" text-anchor="middle" fill="currentColor" font-size="13">1977-2000s</text>
+                    <text x="200" y="110" text-anchor="middle" fill="currentColor" font-size="11" opacity="0.7">Slow, High Accuracy</text>
+                    
+                    <circle cx="500" cy="150" r="12" fill="#00d4ff"/>
+                    <rect x="425" y="180" width="150" height="90" rx="10" fill="url(#boxGrad)" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="500" y="215" text-anchor="middle" fill="currentColor" font-size="16" font-weight="700">Next-Gen (NGS)</text>
+                    <text x="500" y="240" text-anchor="middle" fill="currentColor" font-size="13">2005-Present</text>
+                    <text x="500" y="260" text-anchor="middle" fill="currentColor" font-size="11" opacity="0.7">Fast, Cost-effective</text>
+                    
+                    <circle cx="800" cy="150" r="12" fill="#00d4ff"/>
+                    <rect x="725" y="30" width="150" height="90" rx="10" fill="url(#boxGrad)" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="800" y="65" text-anchor="middle" fill="currentColor" font-size="16" font-weight="700">Long-Read</text>
+                    <text x="800" y="90" text-anchor="middle" fill="currentColor" font-size="13">2010s-Present</text>
+                    <text x="800" y="110" text-anchor="middle" fill="currentColor" font-size="11" opacity="0.7">Complete Sequences</text>
+                </svg>
+            </div>
+
+            <div class="grid-2" style="margin-top: 3rem;">
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem;" contenteditable="true">Sanger Sequencing (1977)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem;" contenteditable="true">
+                        The dominant method during the HGP era. Highly accurate (99.99%) but slow and expensive, sequencing one DNA fragment at a time using the chain-termination method developed by Frederick Sanger.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem;">
+                        <strong>Cost:</strong> ~$0.50 per base | <strong>Speed:</strong> ~1,000 bp/day | <strong>Accuracy:</strong> 99.99%
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem;" contenteditable="true">Next-Generation Sequencing (2005)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem;" contenteditable="true">
+                        Revolutionary technology that sequences millions of DNA fragments simultaneously through massively parallel processing. Made whole genome sequencing accessible and affordable for research and clinical use.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem;">
+                        <strong>Cost:</strong> ~$0.01 per million bases | <strong>Speed:</strong> Billions bp/day | <strong>Accuracy:</strong> 99.9%
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem;" contenteditable="true">Long-Read Sequencing (2010s)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem;" contenteditable="true">
+                        Latest generation technologies from Pacific Biosciences and Oxford Nanopore that can sequence extremely long DNA fragments (10,000-100,000+ bp), enabling complete resolution of complex genomic regions.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem;">
+                        <strong>Read Length:</strong> 10-100+ kb | <strong>Applications:</strong> Structural variants, repetitive regions
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem;" contenteditable="true">Modern Impact</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem;" contenteditable="true">
+                        Today's sequencing costs have dropped below $1,000 per genome with completion times under 24 hours. This has enabled population-scale genomics, routine clinical sequencing, and personalized medicine applications.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem;">
+                        <strong>2003:</strong> $2.7B, 13 years | <strong>2025:</strong> <$1,000, <24 hours
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Impact Chart -->
+        <div class="slide" data-slide="6">
+            <h2 class="slide-title" contenteditable="true">HGP Impact</h2>
+            <p class="slide-subtitle" contenteditable="true">Transforming Science & Society</p>
+            
+            <div class="content-section">
+                <div class="content-section-header">
+                    <h3 class="section-title">Global Impact Across Sectors</h3>
+                    <button class="upload-btn-small" onclick="document.getElementById('impact-upload').click()">
+                        <i data-feather="image"></i>
+                        Add Image
+                    </button>
+                    <input type="file" id="impact-upload" accept="image/*" multiple style="display: none;">
+                </div>
+                <div class="section-images" id="impact-images"></div>
+                
+                <div contenteditable="true" style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 2rem;">
+                    <p style="margin-bottom: 1rem;">The Human Genome Project has had transformative impacts across multiple sectors of society, extending far beyond its original scientific objectives. The project fundamentally changed how we approach medicine, moving from treating symptoms to understanding the genetic basis of disease and developing targeted therapies based on individual genetic profiles.</p>
+                    <p style="margin-bottom: 1rem;">In medicine and healthcare, the HGP enabled the identification of over 1,800 disease genes, revolutionizing diagnosis and treatment of genetic disorders. It paved the way for pharmacogenomics - tailoring drug treatments based on genetic makeup - and cancer genomics, where tumor DNA is sequenced to guide therapy selection. Prenatal and newborn screening programs now use genomic technologies to detect genetic conditions early.</p>
+                    <p style="margin-bottom: 1rem;">The economic impact has been extraordinary. Research shows that every dollar invested in the HGP generated approximately $141 in economic output, creating entirely new industries in biotechnology, bioinformatics, and personalized medicine. The project spawned thousands of genomics companies and created hundreds of thousands of jobs worldwide.</p>
+                    <p>Beyond medicine, the HGP has revolutionized forensic science through DNA fingerprinting, improved agricultural productivity through genetic modification of crops, enhanced our understanding of human evolution and migration patterns, and raised critical ethical questions about genetic privacy, discrimination, and the limits of genetic engineering.</p>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="impactChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 2rem;">
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">Medicine & Healthcare (30%)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.5rem;" contenteditable="true">
+                        Personalized medicine, cancer genomics, pharmacogenomics, disease diagnosis, prenatal screening, and understanding of over 1,800 disease-causing mutations. Drug development now targets specific genetic pathways.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Examples:</strong> BRCA testing for breast cancer, targeted cancer immunotherapies, newborn genetic screening
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">Research & Technology (25%)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.5rem;" contenteditable="true">
+                        Bioinformatics tools, computational biology, CRISPR gene editing, genomic databases (GenBank, NCBI), next-generation sequencing platforms, and entirely new fields like systems biology and synthetic biology.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Technologies:</strong> BLAST, CRISPR-Cas9, RNA-seq, single-cell sequencing, metagenomics
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">Agriculture & Food (15%)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.5rem;" contenteditable="true">
+                        Genetic improvement of crops for yield, disease resistance, and nutritional content. Livestock breeding programs using genomic selection. Development of drought-resistant and climate-adapted varieties.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Impact:</strong> Golden Rice (Vitamin A), disease-resistant cassava, improved wheat varieties
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">Forensics & Law (10%)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.5rem;" contenteditable="true">
+                        DNA fingerprinting for criminal investigations, paternity testing, identification of disaster victims, and exoneration of wrongly convicted individuals. The Innocence Project has freed over 375 people using DNA evidence.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Applications:</strong> CODIS database, ancestry testing, missing persons identification
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">Biotechnology Industry (12%)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.5rem;" contenteditable="true">
+                        Creation of billion-dollar industries in genomics, diagnostics, and therapeutics. Companies like Illumina, 23andMe, and hundreds of biotech startups emerged directly from HGP technologies and knowledge.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Economic impact:</strong> $796 billion in economic output, 310,000+ jobs created
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">Ethical & Social (8%)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.5rem;" contenteditable="true">
+                        Established frameworks for genetic privacy, discrimination protection (GINA Act), informed consent in genetic research, and ongoing debates about gene editing, designer babies, and genetic enhancement.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Key issues:</strong> Genetic privacy, insurance discrimination, embryo selection, gene patents
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <h4>The HGP's Ethical, Legal, and Social Implications (ELSI) Program</h4>
+                <p>From its inception, the HGP dedicated 3-5% of its budget to studying the ethical, legal, and social implications of genomic research - the largest bioethics program in history. This proactive approach addressed issues of genetic privacy, discrimination, and the responsible use of genetic information, setting a model for future large-scale scientific projects.</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Molecules of Life -->
+        <div class="slide" data-slide="7">
+            <h2 class="slide-title" contenteditable="true">Molecules of Life</h2>
+            <p class="slide-subtitle" contenteditable="true">DNA, RNA & Proteins</p>
+            
+            <div class="content-section">
+                <div class="content-section-header">
+                    <h3 class="section-title">The Central Dogma of Molecular Biology</h3>
+                    <button class="upload-btn-small" onclick="document.getElementById('molecules-upload').click()">
+                        <i data-feather="image"></i>
+                        Add Images
+                    </button>
+                    <input type="file" id="molecules-upload" accept="image/*" multiple style="display: none;">
+                </div>
+                
+                <div contenteditable="true" style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 2rem;">
+                    <p style="margin-bottom: 1rem;">Understanding the Human Genome Project requires knowledge of the fundamental molecules that encode and express genetic information. The central dogma of molecular biology describes the flow of genetic information: DNA makes RNA makes Protein. This elegant system allows cells to store genetic information in DNA, transcribe it into RNA messages, and translate those messages into functional proteins.</p>
+                    <p style="margin-bottom: 1rem;">DNA (deoxyribonucleic acid) serves as the master blueprint, containing all genetic instructions needed to build and maintain an organism. The iconic double helix structure, discovered by Watson and Crick in 1953, consists of two complementary strands wound around each other. Each strand is made of four nucleotide bases - adenine (A), thymine (T), guanine (G), and cytosine (C) - that pair specifically: A with T, and G with C.</p>
+                    <p style="margin-bottom: 1rem;">RNA (ribonucleic acid) acts as the messenger between DNA and proteins. While DNA remains safely stored in the nucleus, RNA molecules are transcribed from DNA and carry genetic instructions to the protein-making machinery. RNA differs from DNA in three key ways: it uses the sugar ribose instead of deoxyribose, contains uracil (U) instead of thymine, and is typically single-stranded rather than double-stranded.</p>
+                    <p>Proteins are the workhorses of the cell, performing virtually every cellular function. Built from chains of amino acids (there are 20 different types), proteins fold into complex three-dimensional structures that determine their function. Some proteins serve as enzymes catalyzing chemical reactions, others form structural components like collagen, and still others serve as antibodies, hormones, or transporters.</p>
+                </div>
+                
+                <div id="molecules-gallery" class="section-images"></div>
+            </div>
+
+            <div class="grid-3" style="margin-top: 2rem;">
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">DNA (Deoxyribonucleic Acid)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem;" contenteditable="true">
+                        Double helix structure storing genetic information with four bases: A, T, G, C. The blueprint of all living organisms. The human genome contains approximately 3 billion base pairs organized into 23 pairs of chromosomes.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Structure:</strong> Sugar-phosphate backbone with complementary base pairing<br>
+                        <strong>Function:</strong> Genetic information storage and inheritance<br>
+                        <strong>Location:</strong> Cell nucleus (99%) and mitochondria (1%)
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">RNA (Ribonucleic Acid)</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem;" contenteditable="true">
+                        Single-stranded messenger molecule using uracil (U) instead of thymine. Transcribes DNA instructions and guides protein synthesis. Exists in multiple forms including mRNA (messenger), tRNA (transfer), and rRNA (ribosomal).
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Types:</strong> mRNA, tRNA, rRNA, miRNA, siRNA<br>
+                        <strong>Function:</strong> Protein synthesis, gene regulation<br>
+                        <strong>Differences from DNA:</strong> Ribose sugar, single-stranded, uracil
+                    </p>
+                </div>
+                <div class="card">
+                    <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--accent);" contenteditable="true">Proteins</h3>
+                    <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 0.75rem;" contenteditable="true">
+                        Complex molecules built from 20 different amino acids. Perform vast array of cellular functions including catalysis (enzymes), structure (collagen), transport (hemoglobin), and defense (antibodies). Over 100,000 different proteins in the human body.
+                    </p>
+                    <p style="color: var(--text-tertiary); font-size: 0.9rem; margin-top: 1rem;">
+                        <strong>Building blocks:</strong> 20 amino acids<br>
+                        <strong>Structure levels:</strong> Primary, secondary, tertiary, quaternary<br>
+                        <strong>Functions:</strong> Enzymes, structure, signaling, defense
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <h4>The Genetic Code</h4>
+                <p>The genetic code is the set of rules by which information encoded in DNA is translated into proteins. Three DNA bases (a codon) specify one amino acid. With 4 bases, there are 4³ = 64 possible codons, but only 20 amino acids, making the code redundant. For example, the amino acid leucine can be encoded by 6 different codons. Three codons (UAA, UAG, UGA in RNA) serve as "stop" signals, while AUG serves as the "start" codon and also codes for methionine.</p>
+            </div>
+        </div>
+
+        <!-- Slide 8: 3D Models -->
+        <div class="slide" data-slide="8">
+            <h2 class="slide-title" contenteditable="true">Interactive 3D Models</h2>
+            <p class="slide-subtitle" contenteditable="true">Explore Molecular Structures</p>
+            
+            <div class="card">
+                <div contenteditable="true" style="line-height: 1.8; color: var(--text-secondary); margin-bottom: 2rem;">
+                    <p style="margin-bottom: 1rem;">Explore three-dimensional molecular structures that were crucial to understanding the Human Genome Project. These interactive models allow you to visualize the elegant architectures of DNA's double helix, the complex organization of chromosomes, and modern gene-editing tools like CRISPR-Cas9 that emerged from HGP technologies.</p>
+                    <p>Rotate the models by clicking and dragging, zoom with your scroll wheel, and appreciate the intricate molecular machinery that stores and expresses genetic information in all living organisms.</p>
+                </div>
+                
+                <div class="model-controls">
+                    <label style="font-weight: 600;">Select Model:</label>
+                    <select id="model-select" style="padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text-primary); flex: 1; max-width: 300px;">
+                        <option value="dna">DNA and chromosome</option>
+                        
+                        <option value="custom">Custom Model</option>
+                    </select>
+                    <div id="custom-model-input" style="display: none; flex: 1;">
+                        <input type="text" id="custom-model-url" placeholder="Enter Sketchfab embed URL" style="width: 100%; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text-primary);">
+                        <button class="btn-secondary" id="load-custom-btn" style="margin-top: 0.5rem;">Load Model</button>
+                    </div>
+                </div>
+                
+                <div class="model-viewer" id="model-viewer"></div>
+                
+                <p style="margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    <strong>Controls:</strong> Click and drag to rotate • Scroll to zoom • Right-click and drag to pan
+                </p>
+            </div>
+
+            <div class="grid-2" style="margin-top: 2rem;">
+                <div class="info-box">
+                    <h4>DNA Double Helix</h4>
+                    <p>The iconic twisted ladder structure of DNA, discovered in 1953. The "rungs" are base pairs (A-T and G-C) held together by hydrogen bonds, while the "rails" are sugar-phosphate backbones. The helix makes one complete turn every 10 base pairs, or 3.4 nanometers.</p>
+                </div>
+                <div class="info-box">
+                    <h4>CRISPR-Cas9</h4>
+                    <p>Revolutionary gene-editing tool that emerged from HGP research. CRISPR allows precise cutting and editing of DNA sequences, enabling correction of disease-causing mutations and advancement of genetic research. Won the 2020 Nobel Prize in Chemistry.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: BLAST Tool -->
+        <div class="slide" data-slide="9">
+            <h2 class="slide-title" contenteditable="true">BLAST Tool</h2>
+            <p class="slide-subtitle" contenteditable="true">Basic Local Alignment Search Tool</p>
+            
+            <div class="content-section" style="margin-bottom: 2rem;">
+                <div contenteditable="true" style="line-height: 1.8; color: var(--text-secondary);">
+                    <p style="margin-bottom: 1rem;">BLAST (Basic Local Alignment Search Tool) is one of the most important bioinformatics tools developed as a result of the Human Genome Project. Created by Stephen Altschul and colleagues at the National Center for Biotechnology Information (NCBI) in 1990, BLAST revolutionized how researchers compare DNA and protein sequences.</p>
+                    <p style="margin-bottom: 1rem;">BLAST allows researchers to take an unknown DNA or protein sequence and search massive genomic databases to find similar sequences. This enables identification of genes, discovery of evolutionary relationships between species, prediction of protein function, and diagnosis of genetic diseases. The tool uses sophisticated algorithms to quickly find regions of similarity, even in databases containing billions of base pairs.</p>
+                    <p>The BLAST algorithm works by breaking the query sequence into small "words," searching for exact matches in the database, then extending those matches to find longer regions of similarity. Statistical measures like E-values (Expect values) indicate the significance of matches - lower E-values mean more significant matches that are less likely to occur by chance.</p>
+                </div>
+            </div>
+            
+            <div class="blast-container">
+                <div class="blast-form">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 700;">BLAST Query Form</h3>
+                    
+                    <div class="form-group">
+                        <label>Enter Sequence (FASTA format)</label>
+                        <textarea id="blast-sequence" placeholder=">sequence_1&#10;ATGCGATCGATCG..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>BLAST Program</label>
+                        <select id="blast-program">
+                            <option value="BLASTN">BLASTN (nucleotide-nucleotide)</option>
+                            <option value="BLASTP">BLASTP (protein-protein)</option>
+                            <option value="BLASTX">BLASTX (nucleotide-protein)</option>
+                            <option value="TBLASTN">TBLASTN (protein-nucleotide)</option>
+                            <option value="TBLASTX">TBLASTX (nucleotide-nucleotide, 6-frame)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Database</label>
+                        <select id="blast-database">
+                            <option value="nr">Non-redundant (nr)</option>
+                            <option value="refseq">RefSeq</option>
+                            <option value="pdb">Protein Data Bank (PDB)</option>
+                            <option value="swissprot">Swiss-Prot</option>
+                        </select>
+                    </div>
+                    
+                    <button class="btn-primary" id="blast-submit">
+                        <i data-feather="search"></i>
+                        Run BLAST Search
+                    </button>
+                </div>
+                
+                <div class="blast-results">
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 700;">Search Results</h3>
+                    <div id="blast-results-content">
+                        <p style="color: var(--text-secondary); text-align: center; padding: 2rem 0;">
+                            Enter a sequence and click "Run BLAST Search" to see results.
+                        </p>
+                        <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 2; margin-top: 2rem;">
+                            <p style="margin-bottom: 1rem; font-weight: 600;">This simulation demonstrates:</p>
+                            <ul style="list-style: none; padding-left: 1rem;">
+                                <li>• Query sequence analysis</li>
+                                <li>• Database search parameters</li>
+                                <li>• Alignment hits with E-values</li>
+                                <li>• Bit scores and percent identity</li>
+                                <li>• Statistical significance measures</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box" style="margin-top: 2rem;">
+                <h4>Understanding E-values</h4>
+                <p>The E-value (Expect value) is the number of matches you would expect to see by random chance when searching a database. An E-value of 1 means you'd expect to see 1 match by chance. E-values of 0.01 or lower generally indicate significant matches. An E-value of 1e-50 means you'd need to search 10⁵⁰ databases to find such a match by chance - essentially impossible, indicating a highly significant match.</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Analysis Toolkit -->
+        <div class="slide" data-slide="10">
+            <h2 class="slide-title" contenteditable="true">DNA Analysis Toolkit</h2>
+            <p class="slide-subtitle" contenteditable="true">Computational Genomics Tools</p>
+            
+            <div class="content-section" style="margin-bottom: 2rem;">
+                <div contenteditable="true" style="line-height: 1.8; color: var(--text-secondary);">
+                    <p style="margin-bottom: 1rem;">The Human Genome Project spawned the development of sophisticated computational tools for analyzing DNA sequences. Bioinformatics - the application of computational methods to biological data - became an essential discipline, combining biology, computer science, mathematics, and statistics.</p>
+                    <p style="margin-bottom: 1rem;">These tools allow researchers to perform fundamental operations like calculating sequence properties (GC content, molecular weight), identifying open reading frames (ORFs) that could encode proteins, translating DNA sequences into proteins using the genetic code, and analyzing codon usage patterns that reveal clues about gene expression and evolution.</p>
+                    <p>Below is an interactive toolkit that demonstrates some key bioinformatics operations used daily by genomics researchers worldwide. Try analyzing the example sequence to see these tools in action.</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="form-group">
+                    <label>Enter DNA Sequence</label>
+                    <textarea id="analysis-sequence" placeholder="Paste DNA sequence (A, C, G, T) or click 'Load Example'..." style="min-height: 150px;"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                    <button class="btn-secondary" id="load-example">
+                        <i data-feather="download"></i> Load Example
+                    </button>
+                    <button class="btn-secondary" id="clear-sequence">
+                        <i data-feather="x"></i> Clear
+                    </button>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="properties">Properties</button>
+                    <button class="tab-btn" data-tab="orf">Find ORFs</button>
+                    <button class="tab-btn" data-tab="translate">Translator</button>
+                    <button class="tab-btn" data-tab="codon">Codon Usage</button>
+                </div>
+
+                <div id="properties" class="tab-content active"></div>
+                <div id="orf" class="tab-content"></div>
+                <div id="translate" class="tab-content"></div>
+                <div id="codon" class="tab-content"></div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 2rem;">
+                <div class="info-box">
+                    <h4>What are ORFs?</h4>
+                    <p>Open Reading Frames (ORFs) are stretches of DNA between a start codon (ATG) and a stop codon (TAA, TAG, or TGA) that could potentially encode a protein. Finding ORFs is a crucial first step in identifying genes within genomic sequences.</p>
+                </div>
+                <div class="info-box">
+                    <h4>GC Content Importance</h4>
+                    <p>GC content (percentage of guanine and cytosine bases) varies across genomes and can indicate gene-rich regions, evolutionary relationships, and thermal stability. Human DNA averages 41% GC content, but gene-rich regions often have higher GC content.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Documentation -->
+        <div class="slide" data-slide="11">
+            <h2 class="slide-title">Documentation</h2>
+            <p class="slide-subtitle">Project Images & Process Work</p>
+            
+            <div class="card">
+                <h3 class="section-title">Final Project Images</h3>
+                <div class="image-upload-area" onclick="document.getElementById('final-upload').click()">
+                    <input type="file" id="final-upload" accept="image/*" multiple style="display: none;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📸</div>
+                    <p style="color: var(--text-secondary); font-weight: 600;">Click to upload final project images</p>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Drag and drop or click to browse • Supports multiple files</p>
+                </div>
+                <div id="final-gallery" class="image-gallery"></div>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">Process Work Documentation</h3>
+                <div class="image-upload-area" onclick="document.getElementById('process-upload').click()">
+                    <input type="file" id="process-upload" accept="image/*" multiple style="display: none;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">📷</div>
+                    <p style="color: var(--text-secondary); font-weight: 600;">Click to upload process work images</p>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">Include sketches, diagrams, research notes • Supports multiple files</p>
+                </div>
+                <div id="process-gallery" class="image-gallery"></div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Credits -->
+        <div class="slide" data-slide="12">
+            <h2 class="slide-title">Credits & Acknowledgments</h2>
+            <p class="slide-subtitle">References & Resources</p>
+            
+            <div class="card">
+                <h3 class="section-title">Project Credits</h3>
+                <div contenteditable="true" style="line-height: 2; color: var(--text-secondary);">
+                    <p><strong>Project Supervisor:</strong> Prof.Gobi.M</p>
+                    <p><strong>Institution:</strong> SRMIST</p>
+                    <p><strong>Department:</strong> Computational Biology</p>
+                    <p><strong>Course:</strong> Genomics & Molecular Biology</p>
+                    <p><strong>Academic Year:</strong> First Year</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">Key Resources & References</h3>
+                <div contenteditable="true" style="line-height: 2; color: var(--text-secondary);">
+                    <p style="margin-top: 1rem;"><strong>Primary Sources:</strong></p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>National Human Genome Research Institute (NHGRI)</li>
+                        <li>National Center for Biotechnology Information (NCBI)</li>
+                        <li>Wellcome Sanger Institute</li>
+                        <li>Human Genome Project Information Archive</li>
+                        <li>GenBank Nucleotide Database</li>
+                    </ul>
+                    
+                    <p style="margin-top: 1.5rem;"><strong>Tools & Databases:</strong></p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>NCBI BLAST (Basic Local Alignment Search Tool)</li>
+                        <li>UniProt Protein Database</li>
+                        <li>Ensembl Genome Browser</li>
+                        <li>PDB (Protein Data Bank)</li>
+                        <li>Sketchfab 3D Model Library</li>
+                    </ul>
+                    
+                    <p style="margin-top: 1.5rem;"><strong>Key Publications:</strong></p>
+                    <ul style="margin-left: 2rem; margin-top: 0.5rem;">
+                        <li>International Human Genome Sequencing Consortium (2001). "Initial sequencing and analysis of the human genome." Nature 409: 860-921</li>
+                        <li>Venter et al. (2001). "The sequence of the human genome." Science 291: 1304-1351</li>
+                        <li>International Human Genome Sequencing Consortium (2004). "Finishing the euchromatic sequence of the human genome." Nature 431: 931-945</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">Technical Colophon</h3>
+                <div style="line-height: 2; color: var(--text-secondary);">
+                    <p><strong>Technologies:</strong> HTML5, CSS3, JavaScript ES6+</p>
+                    <p><strong>Visualization:</strong> Chart.js for interactive charts</p>
+                    <p><strong>3D Models:</strong> Sketchfab embedded viewers</p>
+                    <p><strong>Typography:</strong> Inter font family (Google Fonts)</p>
+                    <p><strong>Icons:</strong> Feather Icons v4.29.0</p>
+                    <p><strong>Design System:</strong> Custom CSS with dual theme support</p>
+                    <p><strong>Features:</strong> Responsive design, dark/light themes, interactive tools</p>
+                    <p><strong>Version:</strong> 2.0 Enhanced | Last Updated: <span id="update-date"></span></p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h4>About This Portfolio</h4>
+                <p>This interactive portfolio was created as an educational resource to explore the Human Genome Project and its transformative impact on science and society. All content is editable, allowing customization for specific academic or research contexts. The portfolio includes interactive DNA analysis tools, 3D molecular visualizations, and comprehensive documentation of the HGP's methodology, achievements, and legacy.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+        
+        let currentSlide = 1;
+        const totalSlides = 12;
+        const slides = document.querySelectorAll('.slide');
+        let impactChart = null;
+        
+        document.getElementById('update-date').textContent = new Date().toLocaleDateString();
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+                animateStatBars();
+            }, 500);
+        });
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+        }
+        updateThemeIcon();
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            updateThemeIcon();
+            
+            if (impactChart && currentSlide === 6) {
+                impactChart.destroy();
+                initImpactChart();
+            }
+        });
+
+        function updateThemeIcon() {
+            const icon = themeToggle.querySelector('i');
+            if (!icon) return;
+            if (document.body.classList.contains('light-mode')) {
+                icon.setAttribute('data-feather', 'moon');
+            } else {
+                icon.setAttribute('data-feather', 'sun');
+            }
+            feather.replace();
+        }
+
+        // Student Management - FIXED
+        function addStudent() {
+            const container = document.getElementById('studentsContainer');
+            const studentCard = document.createElement('div');
+            studentCard.className = 'student-card';
+            studentCard.innerHTML = `
+                <button class="remove-student" onclick="removeStudent(this)">
+                    <i data-feather="x"></i>
+                </button>
+                <h4 contenteditable="true">New Student</h4>
+                <p contenteditable="true">Reg. No: 2021XXXXX</p>
+            `;
+            container.appendChild(studentCard);
+            feather.replace();
+        }
+
+        function removeStudent(btn) {
+            if (confirm('Remove this team member?')) {
+                btn.closest('.student-card').remove();
+            }
+        }
+
+        window.addStudent = addStudent;
+        window.removeStudent = removeStudent;
+
+        // Image Modal
+        function openImageModal(src) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = src;
+            modal.classList.add('active');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        window.openImageModal = openImageModal;
+        window.closeImageModal = closeImageModal;
+
+        document.getElementById('imageModal').addEventListener('click', (e) => {
+            if (e.target.id === 'imageModal') {
+                closeImageModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+
+        // Section Image Upload Handler - FIXED
+        function setupSectionImageUpload(inputId, galleryId) {
+            const input = document.getElementById(inputId);
+            const gallery = document.getElementById(galleryId);
+            
+            if (!input || !gallery) return;
+            
+            input.addEventListener('change', (e) => {
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const div = document.createElement('div');
+                        div.className = 'section-image-item';
+                        div.innerHTML = `
+                            <img src="${event.target.result}" alt="${file.name}">
+                            <button class="remove-image" onclick="this.parentElement.remove()">
+                                <i data-feather="x"></i>
+                            </button>
+                        `;
+                        div.querySelector('img').addEventListener('click', () => {
+                            openImageModal(event.target.result);
+                        });
+                        gallery.appendChild(div);
+                        feather.replace();
+                    };
+                    reader.readAsDataURL(file);
+                });
+                input.value = '';
+            });
+        }
+
+        setupSectionImageUpload('stats-upload', 'stats-images');
+        setupSectionImageUpload('workflow-upload', 'workflow-images');
+        setupSectionImageUpload('sequencing-upload', 'sequencing-images');
+        setupSectionImageUpload('impact-upload', 'impact-images');
+
+        // Molecules Gallery Upload - FIXED
+        const moleculesInput = document.getElementById('molecules-upload');
+        const moleculesGallery = document.getElementById('molecules-gallery');
+        
+        if (moleculesInput && moleculesGallery) {
+            moleculesInput.addEventListener('change', (e) => {
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const div = document.createElement('div');
+                        div.className = 'image-item';
+                        div.innerHTML = `
+                            <img src="${event.target.result}" alt="${file.name}">
+                            <div class="image-caption" contenteditable="true">Caption for ${file.name}</div>
+                            <button class="remove-image" onclick="this.parentElement.remove()">
+                                <i data-feather="x"></i>
+                            </button>
+                        `;
+                        div.querySelector('img').addEventListener('click', () => {
+                            openImageModal(event.target.result);
+                        });
+                        moleculesGallery.appendChild(div);
+                        feather.replace();
+                    };
+                    reader.readAsDataURL(file);
+                });
+                moleculesInput.value = '';
+            });
+        }
+
+        // Documentation Image Uploads - FIXED
+        function setupImageUpload(inputId, galleryId) {
+            const input = document.getElementById(inputId);
+            const gallery = document.getElementById(galleryId);
+            
+            if (!input || !gallery) return;
+            
+            input.addEventListener('change', (e) => {
+                Array.from(e.target.files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const div = document.createElement('div');
+                        div.className = 'image-item';
+                        div.innerHTML = `
+                            <img src="${event.target.result}" alt="${file.name}">
+                            <div class="image-caption" contenteditable="true">Caption for ${file.name}</div>
+                            <button class="remove-image" onclick="this.parentElement.remove()">
+                                <i data-feather="x"></i>
+                            </button>
+                        `;
+                        div.querySelector('img').addEventListener('click', () => {
+                            openImageModal(event.target.result);
+                        });
+                        gallery.appendChild(div);
+                        feather.replace();
+                    };
+                    reader.readAsDataURL(file);
+                });
+                input.value = '';
+            });
+        }
+
+        setupImageUpload('final-upload', 'final-gallery');
+        setupImageUpload('process-upload', 'process-gallery');
+
+        // Slide Navigation
+        const slideNavContainer = document.getElementById('slide-nav');
+        const slideNames = [
+            'Home', 'Project Info', 'Statistics', 'Development', 'Sequencing', 
+            'Impact', 'Molecules', '3D Models', 'BLAST', 'Analysis', 'Documentation', 'Credits'
+        ];
+
+        slideNames.forEach((name, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'slide-nav-dot';
+            if (index === 0) dot.classList.add('active');
+            dot.dataset.title = name;
+            dot.dataset.slide = index + 1;
+            dot.addEventListener('click', () => goToSlide(index + 1));
+            slideNavContainer.appendChild(dot);
+        });
+
+        function goToSlide(slideNum) {
+            if (slideNum < 1 || slideNum > totalSlides) return;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[slideNum - 1].classList.add('active');
+            
+            document.querySelectorAll('.slide-nav-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === slideNum - 1);
+            });
+            
+            currentSlide = slideNum;
+            document.getElementById('current-slide').textContent = currentSlide;
+            
+            updateArrowButtons();
+            
+            if (slideNum === 3) {
+                setTimeout(animateStatBars, 300);
+            }
+            
+            if (slideNum === 6) {
+                setTimeout(() => {
+                    if (!impactChart) {
+                        initImpactChart();
+                    }
+                }, 300);
+            }
+        }
+
+        // Arrow Navigation
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+        nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+        function updateArrowButtons() {
+            prevBtn.disabled = currentSlide === 1;
+            nextBtn.disabled = currentSlide === totalSlides;
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.isContentEditable || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
+            if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+        });
+
+        updateArrowButtons();
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        // Animate Stat Bars
+        function animateStatBars() {
+            const statFills = document.querySelectorAll('.stat-fill');
+            statFills.forEach(fill => {
+                fill.style.width = '0';
+                setTimeout(() => {
+                    fill.style.width = fill.dataset.width;
+                }, 100);
+            });
+        }
+
+        // Impact Chart - FIXED WITH ANIMATION
+        function initImpactChart() {
+            const canvas = document.getElementById('impactChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const isDark = !document.body.classList.contains('light-mode');
+            
+            if (impactChart) {
+                impactChart.destroy();
+            }
+            
+            impactChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Medicine & Healthcare', 'Research & Technology', 'Agriculture & Food', 'Forensics & Law', 'Biotechnology', 'Ethical & Social'],
+                    datasets: [{
+                        data: [30, 25, 15, 10, 12, 8],
+                        backgroundColor: [
+                            '#00d4ff',
+                            '#00b8e6',
+                            '#0099cc',
+                            '#007ab3',
+                            '#005c99',
+                            '#003d80'
+                        ],
+                        borderWidth: 2,
+                        borderColor: isDark ? '#000' : '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1500,
+                        easing: 'easeInOutQuart'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: isDark ? '#ffffff' : '#1a1a1a',
+                                font: { size: 13, family: 'Inter' },
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: isDark ? '#0a0a0a' : '#ffffff',
+                            titleColor: isDark ? '#ffffff' : '#1a1a1a',
+                            bodyColor: isDark ? '#a0a0a0' : '#586069',
+                            borderColor: isDark ? '#1a1a1a' : '#e1e4e8',
+                            borderWidth: 1,
+                            padding: 12,
+                            titleFont: { size: 14, weight: '600' },
+                            bodyFont: { size: 13 },
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3D Model Viewer
+        const modelSelect = document.getElementById('model-select');
+        const modelViewer = document.getElementById('model-viewer');
+        const customInput = document.getElementById('custom-model-input');
+        const customUrl = document.getElementById('custom-model-url');
+        const loadCustomBtn = document.getElementById('load-custom-btn');
+
+        const models = {
+            dna: 'https://sketchfab.com/models/cc33bb1ebe6141b08d0d06f1bbebc2b7/embed',
+            
+        
+        };
+
+        modelSelect.addEventListener('change', (e) => {
+            if (e.target.value === 'custom') {
+                customInput.style.display = 'block';
+                modelViewer.innerHTML = '<p style="text-align: center; padding: 3rem; color: var(--text-secondary);">Enter a Sketchfab model URL and click Load Model</p>';
+            } else {
+                customInput.style.display = 'none';
+                loadModel(models[e.target.value]);
+            }
+        });
+
+        loadCustomBtn.addEventListener('click', () => {
+            const url = customUrl.value.trim();
+            if (url) loadModel(url);
+        });
+
+        function loadModel(url) {
+            modelViewer.innerHTML = `<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
+        }
+
+        loadModel(models.dna);
+
+        // BLAST Tool
+        const blastSubmit = document.getElementById('blast-submit');
+        const blastSequence = document.getElementById('blast-sequence');
+        const blastProgram = document.getElementById('blast-program');
+        const blastDatabase = document.getElementById('blast-database');
+        const blastResults = document.getElementById('blast-results-content');
+
+        blastSubmit.addEventListener('click', () => {
+            if (!blastSequence.value.trim()) {
+                alert('Please enter a sequence');
+                return;
+            }
+
+            blastResults.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--text-secondary);"><i data-feather="loader" style="animation: spin 1s linear infinite;"></i> Running BLAST search...</p>';
+            feather.replace();
+
+            setTimeout(() => {
+                const mockResults = [
+                    { acc: 'NM_007294.3', desc: 'Homo sapiens BRCA1, DNA repair associated', score: 1250, eValue: '0.0', identity: '98%' },
+                    { acc: 'XM_024453820.1', desc: 'Pan troglodytes BRCA1 (BRCA1), mRNA', score: 1180, eValue: '1e-150', identity: '95%' },
+                    { acc: 'NM_001101.3', desc: 'Homo sapiens ACTB (actin beta), mRNA', score: 450, eValue: '2e-45', identity: '75%' },
+                    { acc: 'XM_005253906.1', desc: 'Mus musculus Brca1 (Brca1), mRNA', score: 380, eValue: '5e-38', identity: '72%' }
+                ];
+
+                let html = `
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border);">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--accent);">Query Information</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.25rem;"><strong>Program:</strong> ${blastProgram.value}</p>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.25rem;"><strong>Database:</strong> ${blastDatabase.value}</p>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);"><strong>Hits Found:</strong> ${mockResults.length}</p>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Accession</th>
+                                    <th>Description</th>
+                                    <th>Score</th>
+                                    <th>E-value</th>
+                                    <th>Identity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                mockResults.forEach(r => {
+                    html += `
+                        <tr style="cursor: pointer;" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">
+                            <td><strong style="color: var(--accent);">${r.acc}</strong></td>
+                            <td>${r.desc}</td>
+                            <td><strong>${r.score}</strong></td>
+                            <td><code style="background: var(--border); padding: 0.25rem 0.5rem; border-radius: 4px;">${r.eValue}</code></td>
+                            <td><strong style="color: var(--accent);">${r.identity}</strong></td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: var(--card-bg); border-left: 4px solid var(--accent); border-radius: 4px;">
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            <strong style="color: var(--text-primary);">Note:</strong> This is a simulated BLAST result for demonstration purposes. 
+                        </p>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                            Lower E-values indicate more significant matches. E-values < 0.01 are generally considered significant.
+                        </p>
+                    </div>
+                `;
+
+                blastResults.innerHTML = html;
+            }, 1500);
+        });
+
+        // Analysis Toolkit
+        const analysisSeq = document.getElementById('analysis-sequence');
+        const loadExample = document.getElementById('load-example');
+        const clearSeq = document.getElementById('clear-sequence');
+        const tabBtns = document.querySelectorAll('.tab-btn');
+
+        const exampleSeq = `>Example_BRCA1_Fragment\nATGGATTTATCTGCTCTTCGCGTTGAAGAAGTACAAAATGTCATTAATGCTATGCGAGCATTTGGAGGAAGGGTTTCTCCTACTCGTAGCAGTTGGCTGCTGAACCCCAAATCCTCCTATACCCCTGCAGGCAAACCTATGACCAGAGGAATTCTACAAGAGAGGAAAACCAGGTCGTTGGTACTAGGGATAGGCTTTACATGGTTCCTTAGAAACTTGCAAAAGCCCTAACTCACAGCCCCTGATTATAAGGAAACCTAGAAGCAAAAGGGGGGGCCTAGTGAGGGCCTGAAATTGTCTCTACTCCTAGGCCGGCCTCCTCAGTCTCCCAGCAGAGTGACTTATTAGAGACGGGGAAAAATCACTGCCTGCTACCCTTTCCCAATTGTGTCAGTCATGCAGCACTCCGATTTATGGGTGATTGGTCTGCTGTTGCTAGGGGTTGTGTTTCCACCAGGAATAATTATGTAAGGAAGGGAAAATTTCAAAGAGGGGCCAGGTCGTTGGTACTAGGGATAGGCTTTACATGGTTCCTTAGAAACTTGC`;
+
+        loadExample.addEventListener('click', () => {
+            analysisSeq.value = exampleSeq;
+            runAnalysis();
+        });
+
+        clearSeq.addEventListener('click', () => {
+            analysisSeq.value = '';
+            runAnalysis();
+        });
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        analysisSeq.addEventListener('input', runAnalysis);
+
+        const codonTable = {
+            'TTT': 'F', 'TTC': 'F', 'TTA': 'L', 'TTG': 'L',
+            'TCT': 'S', 'TCC': 'S', 'TCA': 'S', 'TCG': 'S',
+            'TAT': 'Y', 'TAC': 'Y', 'TAA': '*', 'TAG': '*',
+            'TGT': 'C', 'TGC': 'C', 'TGA': '*', 'TGG': 'W',
+            'CTT': 'L', 'CTC': 'L', 'CTA': 'L', 'CTG': 'L',
+            'CCT': 'P', 'CCC': 'P', 'CCA': 'P', 'CCG': 'P',
+            'CAT': 'H', 'CAC': 'H', 'CAA': 'Q', 'CAG': 'Q',
+            'CGT': 'R', 'CGC': 'R', 'CGA': 'R', 'CGG': 'R',
+            'ATT': 'I', 'ATC': 'I', 'ATA': 'I', 'ATG': 'M',
+            'ACT': 'T', 'ACC': 'T', 'ACA': 'T', 'ACG': 'T',
+            'AAT': 'N', 'AAC': 'N', 'AAA': 'K', 'AAG': 'K',
+            'AGT': 'S', 'AGC': 'S', 'AGA': 'R', 'AGG': 'R',
+            'GTT': 'V', 'GTC': 'V', 'GTA': 'V', 'GTG': 'V',
+            'GCT': 'A', 'GCC': 'A', 'GCA': 'A', 'GCG': 'A',
+            'GAT': 'D', 'GAC': 'D', 'GAA': 'E', 'GAG': 'E',
+            'GGT': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'
+        };
+
+        function runAnalysis() {
+            const rawSeq = analysisSeq.value;
+            const seq = rawSeq.startsWith('>') ? rawSeq.split('\n').slice(1).join('') : rawSeq;
+            const cleanSeq = seq.toUpperCase().replace(/[^ACGT]/g, '');
+
+            if (!cleanSeq) {
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">Enter a DNA sequence to begin analysis</p>';
+                });
+                return;
+            }
+
+            analyzeProperties(cleanSeq);
+            findORFs(cleanSeq);
+            translateSequence(cleanSeq);
+            analyzeCodonUsage(cleanSeq);
+        }
+
+        function analyzeProperties(seq) {
+            const counts = { A: 0, C: 0, G: 0, T: 0 };
+            for (const base of seq) {
+                if (counts[base] !== undefined) counts[base]++;
+            }
+
+            const length = seq.length;
+            const gcContent = (((counts.G + counts.C) / length) * 100).toFixed(2);
+            const mw = (counts.A * 313.21 + counts.C * 289.18 + counts.G * 329.21 + counts.T * 304.2 - (length - 1) * 18.015).toFixed(2);
+            const atContent = (((counts.A + counts.T) / length) * 100).toFixed(2);
+
+            document.getElementById('properties').innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                    <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Sequence Length</div>
+                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent);">${length.toLocaleString()} bp</div>
+                    </div>
+                    <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">GC Content</div>
+                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent);">${gcContent}%</div>
+                    </div>
+                    <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">AT Content</div>
+                        <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent);">${atContent}%</div>
+                    </div>
+                    <div style="background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Molecular Weight</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent);">${parseFloat(mw).toLocaleString()} g/mol</div>
+                    </div>
+                </div>
+                <div style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid var(--border);">
+                    <h4 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--accent);">Base Composition</h4>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">Adenine (A)</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">${counts.A}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-tertiary);">${((counts.A/length)*100).toFixed(1)}%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">Cytosine (C)</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">${counts.C}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-tertiary);">${((counts.C/length)*100).toFixed(1)}%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">Guanine (G)</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">${counts.G}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-tertiary);">${((counts.G/length)*100).toFixed(1)}%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">Thymine (T)</div>
+                            <div style="font-size: 1.5rem; font-weight: 700;">${counts.T}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-tertiary);">${((counts.T/length)*100).toFixed(1)}%</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function findORFs(seq) {
+            const reverseComplement = seq.split('').reverse().map(b => ({'A':'T','T':'A','C':'G','G':'C'}[b])).join('');
+            const frames = {
+                '+1': seq, '+2': seq.substring(1), '+3': seq.substring(2),
+                '-1': reverseComplement, '-2': reverseComplement.substring(1), '-3': reverseComplement.substring(2)
+            };
+            
+            let orfs = [];
+            const minLength = 75;
+
+            for (const [frame, sequence] of Object.entries(frames)) {
+                for (let i = 0; i < sequence.length - 2; i += 3) {
+                    if (sequence.substring(i, i + 3) === 'ATG') {
+                        for (let j = i + 3; j < sequence.length - 2; j += 3) {
+                            const codon = sequence.substring(j, j + 3);
+                            if (codon === 'TAA' || codon === 'TAG' || codon === 'TGA') {
+                                const orfSeq = sequence.substring(i, j + 3);
+                                if (orfSeq.length >= minLength) {
+                                    orfs.push({ 
+                                        frame, 
+                                        start: i + 1, 
+                                        end: j + 3,
+                                        length: orfSeq.length,
+                                        sequence: orfSeq
+                                    });
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            orfs.sort((a, b) => b.length - a.length);
+
+            let html = `
+                <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border);">
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        <strong style="color: var(--text-primary);">ORFs Found:</strong> ${orfs.length} open reading frames (minimum ${minLength} bp)
+                    </p>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Frame</th>
+                                <th>Start Position</th>
+                                <th>End Position</th>
+                                <th>Length (bp)</th>
+                                <th>Length (aa)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            if (orfs.length > 0) {
+                orfs.forEach(orf => {
+                    const aaLength = Math.floor(orf.length / 3);
+                    html += `
+                        <tr style="cursor: pointer;" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">
+                            <td><strong style="color: var(--accent);">${orf.frame}</strong></td>
+                            <td>${orf.start}</td>
+                            <td>${orf.end}</td>
+                            <td><strong>${orf.length}</strong></td>
+                            <td><strong>${aaLength}</strong></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                html += `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No ORFs found (minimum ${minLength} bp)</td></tr>`;
+            }
+
+            html += `</tbody></table></div>`;
+            document.getElementById('orf').innerHTML = html;
+        }
+
+        function translateSequence(seq) {
+            function translate(sequence) {
+                let protein = '';
+                for (let i = 0; i < sequence.length - 2; i += 3) {
+                    const codon = sequence.substring(i, i + 3);
+                    const aa = codonTable[codon] || '?';
+                    if (aa === 'M') protein += `<span style="color: #4ade80; font-weight: 700;">${aa}</span>`;
+                    else if (aa === '*') protein += `<span style="color: #ef4444; font-weight: 700;">${aa}</span>`;
+                    else protein += aa;
+                }
+                return protein;
+            }
+
+            document.getElementById('translate').innerHTML = `
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--accent);">Forward Frame +1</h4>
+                    <div style="background: var(--bg); padding: 1rem; border-radius: 8px; font-family: 'Courier New', monospace; word-break: break-all; line-height: 1.8; border: 1px solid var(--border);">${translate(seq)}</div>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--accent);">Forward Frame +2</h4>
+                    <div style="background: var(--bg); padding: 1rem; border-radius: 8px; font-family: 'Courier New', monospace; word-break: break-all; line-height: 1.8; border: 1px solid var(--border);">${translate(seq.substring(1))}</div>
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--accent);">Forward Frame +3</h4>
+                    <div style="background: var(--bg); padding: 1rem; border-radius: 8px; font-family: 'Courier New', monospace; word-break: break-all; line-height: 1.8; border: 1px solid var(--border);">${translate(seq.substring(2))}</div>
+                </div>
+                <div style="margin-top: 2rem; padding: 1rem; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border);">
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">
+                        <strong style="color: var(--text-primary);">Legend:</strong> 
+                        <span style="color: #4ade80; font-weight: 700;">M</span> = Start Codon (Methionine) | 
+                        <span style="color: #ef4444; font-weight: 700;">*</span> = Stop Codon
+                    </p>
+                </div>
+            `;
+        }
+
+        function analyzeCodonUsage(seq) {
+            const codonCounts = {};
+            for (const codon in codonTable) codonCounts[codon] = 0;
+
+            let totalCodons = 0;
+            for (let i = 0; i < seq.length - 2; i += 3) {
+                const codon = seq.substring(i, i + 3);
+                if (codonTable[codon]) {
+                    codonCounts[codon]++;
+                    totalCodons++;
+                }
+            }
+
+            const sortedCodons = Object.entries(codonCounts)
+                .filter(([_, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1]);
+
+            let html = `
+                <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border);">
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                        <strong style="color: var(--text-primary);">Total Codons Analyzed:</strong> ${totalCodons.toLocaleString()}
+                    </p>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Codon</th>
+                                <th>Amino Acid</th>
+                                <th>Count</th>
+                                <th>Frequency (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            if (sortedCodons.length > 0) {
+                sortedCodons.forEach(([codon, count]) => {
+                    const percent = ((count / totalCodons) * 100).toFixed(2);
+                    const aa = codonTable[codon];
+                    const aaName = {'M': 'Methionine (Start)', '*': 'Stop', 'A': 'Alanine', 'C': 'Cysteine', 'D': 'Aspartic acid', 'E': 'Glutamic acid', 'F': 'Phenylalanine', 'G': 'Glycine', 'H': 'Histidine', 'I': 'Isoleucine', 'K': 'Lysine', 'L': 'Leucine', 'N': 'Asparagine', 'P': 'Proline', 'Q': 'Glutamine', 'R': 'Arginine', 'S': 'Serine', 'T': 'Threonine', 'V': 'Valine', 'W': 'Tryptophan', 'Y': 'Tyrosine'}[aa] || aa;
+                    html += `
+                        <tr style="cursor: pointer;" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">
+                            <td><code style="background: var(--border); padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 700;">${codon}</code></td>
+                            <td><strong style="color: var(--accent);">${aa}</strong> <span style="color: var(--text-tertiary); font-size: 0.85rem;">${aaName}</span></td>
+                            <td><strong>${count}</strong></td>
+                            <td><strong style="color: var(--accent);">${percent}%</strong></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                html += `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 2rem;">No codons found</td></tr>`;
+            }
+
+            html += `</tbody></table></div>`;
+            document.getElementById('codon').innerHTML = html;
+        }
+
+        runAnalysis();
+    </script>
+</body>
+</html>
